@@ -1,0 +1,40 @@
+import pygame
+import os
+
+#variable decleration are all CAPS
+WIDTH, HEIGHT = 900, 500
+WHITE = (255, 255, 255)
+FPS = 60
+WIN = pygame.display.set_mode((WIDTH, HEIGHT))
+
+BACKGROUND = pygame.image.load("C:/Users/toshiba/Desktop/OOP Jumping Game/Assets/character.png")
+    #manually set the image location for less errors
+BACKGROUND_rect = BACKGROUND.get_rect(center=(0,0))
+    #rect so that the game can manipulate the image better
+pygame.display.set_caption("Fist jumper Game!")   
+    #renaming the window
+
+
+def draw_window():
+   # WIN.blit(BACKGROUND, (0,0))
+    WIN.fill(WHITE)
+    WIN.blit(BACKGROUND, (BACKGROUND_rect))
+    #blit is for drawing surfaces on the screen
+    pygame.display.update() #makes sure that the drawing are updated and everything is drawn
+
+
+def main():
+    clock = pygame.time.Clock()#declares a manual FPS 
+    run = True
+    while run:
+        clock.tick(FPS)#controls the speed of the while loop
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+
+        draw_window()#call the update window function so that it updates to assets    
+
+    pygame.quit()
+
+if __name__ == "__main__":
+    main()    #making sure only the main function is being run
