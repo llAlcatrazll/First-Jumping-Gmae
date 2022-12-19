@@ -1,0 +1,119 @@
+import pygame
+import sys
+
+pygame.init()
+
+CLOCK = pygame.time.Clock()
+    #setter for fps
+SCREEN = pygame.display.set_mode((1000, 500))
+    #display size for the game
+pygame.display.set_caption("OOP Jumping Game")
+    #game name of the application
+
+#assets decleration
+STANDING_SURFACE = pygame.transform.scale(pygame.image.load("C:/Users/toshiba/Desktop/GAME/Assets/Assets/character.png"), (66, 64))
+JUMPING_SURFACE = pygame.transform.scale(pygame.image.load("C:/Users/toshiba/Desktop/GAME/Assets/Assets/character.png"), (66, 64))
+SPIKE = pygame.transform.scale(pygame.image.load("C:/Users/toshiba/Desktop/GAME/OOP Jumping Game/Assets/obstacle.png"), (40, 40))
+SPIKE_2 = pygame.transform.scale(pygame.image.load("C:/Users/toshiba/Desktop/GAME/OOP Jumping Game/Assets/obstacle.png"), (40, 40))
+GAMEOVER = pygame.transform.scale(pygame.image.load("C:/Users/toshiba/Desktop/GAME/OOP Jumping Game/Assets/gameover.png"), (1000, 200))
+BACKGROUND = pygame.image.load("C:/Users/toshiba/Desktop/GAME/Assets/Assets/backgrounds.png")
+
+def main():
+        #variable declerations
+    X_POSITION, Y_POSITION = 100, 450
+    obstacleX, obstacleY = 500, 450
+    obstacleX2, obstacleY2 = 960, 450
+    JUMPING = False
+    JUMP_HEIGHT = 20
+    Y_VELOCITY = JUMP_HEIGHT
+    Y_GRAVITY = 2
+    SPIKE_SPEED, SPIKE_SPEED2 = 5, 5
+    SPIKING = True
+    DIFFICULTY, DIFFICULTY_INCREASE = 0, 0
+        #adjust the spike speed for easier difficulty raising
+
+    mario_rect = STANDING_SURFACE.get_rect(center=(X_POSITION, Y_POSITION))
+    spike_rect = SPIKE.get_rect(topleft=(obstacleX, obstacleY))
+    spike_rect2 = SPIKE.get_rect(topleft=(obstacleX2, obstacleY2))
+    #rects is for the exact position of the assets 
+
+        #main game loop with run boolean
+    run = True
+    while run:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            #checks if the user pressed the X button on the interface
+
+        keys_pressed = pygame.key.get_pressed()#get user keyboard input
+
+        if keys_pressed[pygame.K_SPACE]:#check if input is spacebar and comesback true
+          JUMPING = True
+
+        SCREEN.blit(BACKGROUND, (0, 0))
+        SCREEN.blit(SPIKE,(spike_rect.x, spike_rect.y)) #
+        #draw objects
+
+        if JUMPING:#jumping mechanics and automatic falling down
+            Y_POSITION -= Y_VELOCITY
+            Y_VELOCITY -= Y_GRAVITY
+
+            if Y_VELOCITY < -JUMP_HEIGHT:
+                JUMPING = False
+                Y_VELOCITY = JUMP_HEIGHT
+            mario_rect = JUMPING_SURFACE.get_rect(center=(X_POSITION, Y_POSITION))
+            SCREEN.blit(JUMPING_SURFACE, mario_rect)
+
+        else:   #we can have different sprites for jumping and standing position
+            mario_rect = STANDING_SURFACE.get_rect(center=(X_POSITION, Y_POSITION))
+            SCREEN.blit(STANDING_SURFACE, mario_rect)
+
+        if keys_pressed[pygame.K_d] and X_POSITION <960:
+            X_POSITION += 10 
+
+        if keys_pressed[pygame.K_a] and X_POSITION > 30:
+            X_POSITION -= 10
+        
+        if spike_rect.colliderect(mario_rect):
+            #checks for spike colission to the character and ends the game if True
+            SCREEN.blit(GAMEOVER,(500, 250))
+            SCREEN.fill((255,255,255))
+            main()
+        if spike_rect2.colliderect(mario_rect):
+            SCREEN.blit(GAMEOVER,(500, 250))
+            SCREEN.fill((255,255,255))
+            main()
+            #if player collides with the spike it restarts the game and displays a restart text
+            #main()
+
+        #making the spike move infinitely
+        #cannot directly change the += to -= so have a boolean variable to run and stop the movement or just have a negative
+        spike_rect.x -= SPIKE_SPEED
+        if spike_rect.x == 30:
+            SPIKE_SPEED = -5
+            DIFFICULTY = DIFFICULTY+1
+
+        if spike_rect.x == 960:
+            SPIKE_SPEED = 5
+            DIFFICULTY = DIFFICULTY+1
+        
+        if DIFFICULTY >= 5: #if th eplayer survives for 6 jumps then the level increases with one more spike
+            SCREEN.blit(SPIKE,(spike_rect2.x, spike_rect2.y))
+                #spike spawn position is far right
+            spike_rect2.x -= SPIKE_SPEED2
+            if spike_rect2.x == 30:
+                SPIKE_SPEED2 = -5 
+
+            if spike_rect2.x == 960:
+                SPIKE_SPEED2 = 5
+       
+        pygame.display.update()
+            #updates the game dispaly on whatever is drawn
+        CLOCK.tick(60)
+            #60 frames per second
+
+main()#runs the game with the main function
+
+if __name__== "__main__":#makes sure only the main function is being called upon
+    main()
